@@ -43,15 +43,20 @@ Cypress.Commands.add('login', (email, password) => {
     cy.wait('@loadpage');
 });
 
-Cypress.Commands.add('createAccount', (returnAccount) => {
-    const name = faker.name.findName();
-    const password = faker.internet.password();
-    const email = faker.internet.email(name);
+Cypress.Commands.add('createAccount', (name = null, email = null, password = null, confirmPassword = null, generateFake, returnAccount) => {
+
+    if (generateFake)
+    {
+        name = faker.name.findName();
+        password = faker.internet.password();
+        email = faker.internet.email(name);
+        confirmPassword = password;
+    }
 
     cy.get('[data-test="register-name"] > .MuiInputBase-root > .MuiInputBase-input').type(name);
     cy.get('[data-test="register-email"] > .MuiInputBase-root > .MuiInputBase-input').type(email.replace('..', '.'));
     cy.get('[data-test="register-password"] > .MuiInputBase-root > .MuiInputBase-input').type(password);
-    cy.get('[data-test="register-password2"] > .MuiInputBase-root > .MuiInputBase-input').type(password);
+    cy.get('[data-test="register-password2"] > .MuiInputBase-root > .MuiInputBase-input').type(confirmPassword);
 
     cy.get('[data-test="register-submit"]').click();
 
@@ -62,3 +67,36 @@ Cypress.Commands.add('createAccount', (returnAccount) => {
         return cy.wrap(account);
     }
 });
+
+Cypress.Commands.add('deleteAccount', () => {
+    cy.get('[data-test="dashboard-deleteProfile"]').click();
+
+});
+
+Cypress.Commands.add('createProfile', (status, company, website, location, skills, githubUsername, bio) => {
+
+    cy.get('[data-test="dashboard-createProfile"]').click();
+
+    cy.get('#mui-component-select-status').click();
+
+    cy.get('#mui-component-select-status').then(() => {
+        cy.get('li').each(($list) => {
+            let option = $list.text().trim();
+
+            if (option === status){
+                cy.wrap($list).click();
+            }
+        })
+    })
+
+    cy.get('[data-test="profile-company"] > .MuiInputBase-root > .MuiInputBase-input').type(company);
+    cy.get('[data-test="profile-webSite"] > .MuiInputBase-root > .MuiInputBase-input').type(website);
+    cy.get('[data-test="profile-location"] > .MuiInputBase-root > .MuiInputBase-input').type(location);
+
+
+    cy.get('[data-test="profile-skills"] > .MuiInputBase-root > .MuiInputBase-input').type(skills);    
+    cy.get('[data-test="profile-gitHub"] > .MuiInputBase-root > .MuiInputBase-input').type(githubUsername);
+    cy.get('[rows="1"]').type(bio);
+
+    cy.get('[data-test="profile-submit"]').click();
+})

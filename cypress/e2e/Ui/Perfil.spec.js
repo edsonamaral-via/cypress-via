@@ -20,7 +20,6 @@ describe('Perfil', () => {
                     // Assert
                     cy.get('[data-test="dashboard-welcome"]').should('contain', `Bem-vindo ${name}`);
                 });
-
             });            
 
             it('Então devo ser direcionado para a tela de Perfil', () => {
